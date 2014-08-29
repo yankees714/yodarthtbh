@@ -15,11 +15,12 @@ class UserStreamer(TwythonStreamer):
         if "text" in data and "user" in data:
             tweet = data["text"].encode("utf-8")
             user = data["user"]["screen_name"].encode("utf-8")
-            if self.screen_name == user and "tbh" in tweet:
+            if self.screen_name == user:
                 print user
                 print tweet
-                response = yo_all(YO_TOKEN)
-                print response,"yo!"
+                if "tbh" in tweet:
+                    response = yo_all(YO_TOKEN, "https://twitter.com/darth")
+                    print response,"yo!"
 
     def on_error(self, status_code, data):
         print status_code
@@ -28,8 +29,8 @@ class UserStreamer(TwythonStreamer):
         self.disconnect()
 
 
-def yo_all(api_token):
-    return requests.post("http://api.justyo.co/yoall/", data={'api_token': api_token})
+def yo_all(api_token, link):
+    return requests.post("http://api.justyo.co/yoall/", data={'api_token': api_token, 'link': link})
 
 
 def main():
