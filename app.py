@@ -12,14 +12,16 @@ class UserStreamer(TwythonStreamer):
         self.screen_name = screen_name
 
     def on_success(self, data):
-        if "text" in data and "user" in data:
+        if "text" in data and "user" in data and "id_str" in data:
             tweet = data["text"].encode("utf-8")
             user = data["user"]["screen_name"].encode("utf-8")
-            if self.screen_name == user:
+            tweet_id = data["id_str"].encode("utf-8")
+            
+            if user == self.screen_name:
                 print user
                 print tweet
-                if "tbh" in tweet:
-                    response = yo_all(YO_TOKEN, "https://twitter.com/darth")
+                if "tbh" in tweet or "omfg" in tweet:
+                    response = yo_all(YO_TOKEN, "https://twitter.com/"+self.screen_name+"/status/"+tweet_id)
                     print response,"yo!"
 
     def on_error(self, status_code, data):
