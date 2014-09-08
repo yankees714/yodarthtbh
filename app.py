@@ -7,11 +7,13 @@ from settings import YO_TOKEN
 
 
 class UserStreamer(TwythonStreamer):
+    """ Streams tweets from the given user, and sends a yo when a tweet includes 'tbh'. """
     def __init__(self, screen_name, consumer_key, consumer_secret, access_token, access_token_secret):
         super(UserStreamer, self).__init__(consumer_key, consumer_secret, access_token, access_token_secret)
         self.screen_name = screen_name
 
     def on_success(self, data):
+        """ Handles a successfully retreived tweet. """
         if "text" in data and "user" in data and "id_str" in data:
             tweet = data["text"].encode("utf-8")
             user = data["user"]["screen_name"].encode("utf-8")
@@ -20,18 +22,18 @@ class UserStreamer(TwythonStreamer):
             if user == self.screen_name:
                 print user
                 print tweet
-                if "tbh" in tweet or "omfg" in tweet:
+                if "tbh" in tweet:
                     response = yo_all(YO_TOKEN, "https://twitter.com/"+self.screen_name+"/status/"+tweet_id)
                     print response,"yo!"
 
     def on_error(self, status_code, data):
+        """ Handles an error with the streamer. """
         print status_code
-        # Want to stop trying to get data because of the error?
-        # Uncomment the next line!
-        self.disconnect()
+        self.disconnect()   # Stop getting tweets
 
 
 def yo_all(api_token, link):
+    """ Sends a yo through the given token with the specified link attached. """
     return requests.post("http://api.justyo.co/yoall/", data={'api_token': api_token, 'link': link})
 
 
